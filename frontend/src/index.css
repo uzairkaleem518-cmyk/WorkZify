@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme — warm ivory canvas, like a freshly painted truck panel */
+  --color-canvas: 255 251 242;   /* #FFFBF2 */
+  --color-surface: 255 255 255;  /* card background */
+  --color-surface-2: 250 244 231; /* #FAF4E7 subtle recessed panel */
+  --color-ink: 27 42 74;         /* #1B2A4A deep indigo text */
+  --color-muted: 100 106 130;
+  --color-border: 232 224 205;
+}
+
+.dark {
+  /* Dark theme — dusk-market indigo, colors kept but muted for readability */
+  --color-canvas: 16 20 30;      /* #10141E */
+  --color-surface: 24 29 42;     /* #181D2A */
+  --color-surface-2: 30 36 51;   /* #1E2433 */
+  --color-ink: 236 238 245;      /* #ECEEF5 */
+  --color-muted: 148 156 184;
+  --color-border: 42 49 68;
+}
+
+* {
+  border-color: rgb(var(--color-border));
+}
+
+body {
+  @apply bg-canvas text-ink font-body transition-colors duration-200;
+}
+
+h1, h2, h3 {
+  @apply font-display;
+}
+
+/* Visible keyboard focus everywhere — never suppressed */
+:focus-visible {
+  outline: 2px solid theme("colors.teal.500");
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-2xl shadow-stamp dark:shadow-stamp-dark;
+  }
+
+  .input-field {
+    @apply w-full bg-surface border border-border rounded-xl px-3.5 py-2.5 text-sm text-ink
+           placeholder:text-muted focus:border-teal-500 outline-none transition-colors;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-teal-500 text-white
+           font-semibold text-sm px-5 py-2.5 shadow-stamp hover:bg-teal-600
+           active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-surface2 text-ink
+           border border-border font-semibold text-sm px-5 py-2.5 hover:border-teal-500
+           active:scale-[0.98] transition-all;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-marigold-500 text-ink
+           font-semibold text-sm px-5 py-2.5 shadow-stamp hover:bg-marigold-600
+           active:scale-[0.98] transition-all;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  .badge-available {
+    @apply badge bg-marigold-100 text-marigold-700 dark:bg-marigold-500/15 dark:text-marigold-300;
+  }
+
+  .badge-pending {
+    @apply badge bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300;
+  }
+
+  .badge-approved {
+    @apply badge bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300;
+  }
+
+  .badge-rejected {
+    @apply badge bg-rani-100 text-rani-700 dark:bg-rani-500/15 dark:text-rani-300;
+  }
+
+  .badge-suspended {
+    @apply badge bg-surface2 text-muted;
+  }
+
+  /* Scalloped divider — the truck-art motif that bookends the hero section */
+  .scallop-divider {
+    height: 14px;
+    background-image: radial-gradient(circle at 10px -2px, transparent 12px, rgb(var(--color-canvas)) 13px);
+    background-size: 20px 20px;
+    background-repeat: repeat-x;
+  }
+}
