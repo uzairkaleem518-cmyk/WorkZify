@@ -80,6 +80,10 @@ router.post("/", uploadLimiter, upload.single("image"), async (req, res) => {
 
     res.status(201).json({ url: result.secure_url, publicId: result.public_id });
   } catch (err) {
+    // Logged so the real cause (bad Cloudinary credentials, network issue,
+    // etc.) is visible in the server terminal instead of only a generic
+    // message reaching the client.
+    console.error("Photo upload error:", err);
     if (err.message?.includes("Only JPG")) {
       return res.status(400).json({ message: err.message });
     }
@@ -116,6 +120,7 @@ router.post("/identity", uploadLimiter, upload.single("image"), async (req, res)
 
     res.status(201).json({ document: { publicId: result.public_id, format: result.format } });
   } catch (err) {
+    console.error("Identity document upload error:", err);
     res.status(500).json({ message: "Identity document upload failed. Please try again." });
   }
 });

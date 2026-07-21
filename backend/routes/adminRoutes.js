@@ -115,14 +115,10 @@ router.get("/workers", async (req, res) => {
 });
 
 // -------- Approve worker --------
+// CNIC/selfie documents are optional now (product decision) - approval no
+// longer blocks on them being present.
 router.patch("/workers/:id/approve", async (req, res) => {
   try {
-    const existingWorker = await Worker.findById(req.params.id).select("identityDocuments");
-    if (!existingWorker) return res.status(404).json({ message: "Worker not found" });
-    if (!existingWorker.identityDocuments?.cnic?.publicId || !existingWorker.identityDocuments?.selfie?.publicId) {
-      return res.status(400).json({ message: "CNIC and selfie documents are required before approval" });
-    }
-
     const worker = await Worker.findByIdAndUpdate(
       req.params.id,
       { verificationStatus: "approved" },

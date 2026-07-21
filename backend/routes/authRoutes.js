@@ -101,8 +101,12 @@ router.post(
     body("serviceArea").trim().isLength({ min: 2, max: 120 }).withMessage("Service area is required"),
     body("otp").isLength({ min: 6, max: 6 }).withMessage("Enter the 6-digit OTP"),
     body("photoUrl").optional({ checkFalsy: true }).custom(isCloudinaryUrl).withMessage("Invalid profile photo URL"),
-    body("cnicImage").custom(isIdentityDocument).withMessage("Upload a valid CNIC image"),
-    body("selfieImage").custom(isIdentityDocument).withMessage("Upload a valid selfie image"),
+    // CNIC/selfie are no longer required at registration time - they were
+    // previously mandatory for admin identity verification, but the product
+    // decision now is to make them optional. Still validated with the same
+    // isIdentityDocument shape if a client does send them.
+    body("cnicImage").optional({ checkFalsy: true }).custom(isIdentityDocument).withMessage("Upload a valid CNIC image"),
+    body("selfieImage").optional({ checkFalsy: true }).custom(isIdentityDocument).withMessage("Upload a valid selfie image"),
   ],
   handleValidation,
   async (req, res) => {
@@ -146,8 +150,8 @@ router.post(
         cnicImageUrl: "",
         selfieUrl: "",
         identityDocuments: {
-          cnic: cnicImage,
-          selfie: selfieImage,
+          cnic: cnicImage || null,
+          selfie: selfieImage || null,
         },
         isPhoneVerified: true,
         verificationStatus: "pending",

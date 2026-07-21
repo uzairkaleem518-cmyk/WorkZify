@@ -1,3 +1,4 @@
+import "./env.js";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -15,6 +16,9 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 
+// dotenv.config() already ran via the env.js import above - this call is now
+// redundant but harmless (dotenv is idempotent), left here so nothing else
+// that expected dotenv to be configured at this line breaks.
 dotenv.config();
 
 // ---- Fail fast on missing/weak secrets instead of running insecurely ----

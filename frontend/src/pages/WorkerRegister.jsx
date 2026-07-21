@@ -21,7 +21,6 @@ export default function WorkerRegister() {
     name: "", phone: "", email: "", password: "",
     category: "", experienceYears: "", fee: "", languages: "",
     serviceArea: "", bio: "", cnicNumber: "", otp: "", photoUrl: "",
-    cnicImage: null, selfieImage: null,
   });
 
   useEffect(() => {
@@ -106,8 +105,6 @@ export default function WorkerRegister() {
       password: validatePassword(form.password),
       category: validateCategory(form.category),
       serviceArea: validateServiceArea(form.serviceArea),
-      cnicImage: form.cnicImage ? "" : "CNIC image is required",
-      selfieImage: form.selfieImage ? "" : "Selfie image is required",
     };
     const firstError = Object.values(errors).find(Boolean);
     if (firstError) {
@@ -290,26 +287,6 @@ export default function WorkerRegister() {
             onUploaded={(url) => update("photoUrl", url)}
             hint="JPG, PNG, or WEBP; max 5MB."
           />
-          <ImageUploadField
-            label="CNIC image"
-            kind="cnic"
-            value={form.cnicImage ? "uploaded" : ""}
-            onUploaded={(document) => update("cnicImage", document)}
-            endpoint="/uploads/identity"
-            extraFields={{ phone: form.phone, otp: form.otp }}
-            hint="Required for private admin verification; JPG, PNG, or WEBP; max 5MB."
-          />
-          <FieldNote fieldKey="cnicImage" />
-          <ImageUploadField
-            label="Selfie image"
-            kind="selfie"
-            value={form.selfieImage ? "uploaded" : ""}
-            onUploaded={(document) => update("selfieImage", document)}
-            endpoint="/uploads/identity"
-            extraFields={{ phone: form.phone, otp: form.otp }}
-            hint="Required for private admin verification; JPG, PNG, or WEBP; max 5MB."
-          />
-          <FieldNote fieldKey="selfieImage" />
           <div>
             <input
               placeholder="CNIC number (optional)"
