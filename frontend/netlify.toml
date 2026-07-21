@@ -1,0 +1,24 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxies every /api/* call from the deployed frontend straight to the
+# Render backend. Netlify performs this as a server-side rewrite, so from
+# the browser's point of view every request stays same-origin - no CORS
+# headers needed for this path, and src/api/api.js needs zero changes
+# (it already calls baseURL: "/api", same as in local dev).
+#
+# Replace <your-backend>.onrender.com with your actual Render service URL
+# once it's deployed.
+[[redirects]]
+  from = "/api/*"
+  to = "https://<your-backend>.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# React Router client-side routing: any other path falls back to index.html
+# so refreshing a deep link like /worker/dashboard doesn't 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
