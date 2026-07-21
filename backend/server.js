@@ -18,20 +18,34 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 dotenv.config();
 
 // ---- Fail fast on missing/weak secrets instead of running insecurely ----
+// On Vercel, process.exit(1) inside a serverless invocation just produces a
+// confusing crash rather than the clear startup message you'd see on a
+// traditional server - so there we throw instead, which Vercel reports as a
+// normal function error.
+// True on Vercel, true on Netlify Functions (which run on AWS Lambda under
+// the hood - AWS_LAMBDA_FUNCTION_NAME is set by the Lambda runtime itself),
+// false on a traditional long-lived host (Railway/Back4app/Render/local).
+const isServerless = Boolean(
+  process.env.VERCEL || process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME
+);
+
+const failFast = (message) => {
+  console.error(message);
+  if (!isServerless) process.exit(1);
+  throw new Error(message);
+};
+
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 20) {
-  console.error("FATAL: JWT_SECRET is missing or too short (min 20 chars). Set it in .env.");
-  process.exit(1);
+  failFast("FATAL: JWT_SECRET is missing or too short (min 20 chars). Set it in .env.");
 }
 if (!process.env.MONGO_URI) {
-  console.error("FATAL: MONGO_URI is missing. Set it in .env.");
-  process.exit(1);
+  failFast("FATAL: MONGO_URI is missing. Set it in .env.");
 }
 if (!process.env.ENCRYPTION_KEY || !/^[a-fA-F0-9]{64}$/.test(process.env.ENCRYPTION_KEY)) {
-  console.error(
+  failFast(
     "FATAL: ENCRYPTION_KEY is missing or not 64 hex chars. Set it in .env " +
     "(generate with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\")."
   );
-  process.exit(1);
 }
 
 connectDB();
@@ -135,4 +149,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Serverless platforms (Vercel, Netlify Functions) import this module and
+// invoke the exported app directly per-request - there's no long-running
+// process listening on a port - so app.listen() only runs on traditional
+// hosts like Railway, Back4app, Render, or local dev.
+if (!isServerless) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+export default app;
